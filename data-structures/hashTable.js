@@ -2,6 +2,8 @@
 
 HASH TABLE
 
+
+
 Collection of key-value pairs.
 Map keys to values for efficient lookup.
 Use an array as the underlying data structure.
@@ -12,7 +14,8 @@ Since our hashing function might map multiple keys to the same integer, we have 
 
 *** Note:
 
-ES6 includes a Map data structure. It differs from the JavaScript object because the keys can be any value (not just strings like for objects), there is a size property, and there is a guaranteed order (the insertion order).
+ES6 includes a Map data structure. It differs from the JavaScript object because the keys can be any value (not just strings like for objects), 
+there is a size property, and there is a guaranteed order (the insertion order).
 
 Hash tables are also referred to as hash mapse or dictionaries.
 
@@ -67,8 +70,11 @@ function simpleHash(str, tableSize) {
 }
 // source: http://pmav.eu/stuff/javascript-hashing-functions/source.html
 
-function HashTable(/* ??? */) {
+function HashTable(tableSize) {
   // implement me...
+  this._storage = [];
+  this._size = tableSize;
+  this._count = 0;
 }
 
 // This is a helper method that you may want to implement to help keep your code DRY
@@ -85,34 +91,113 @@ HashTable.prototype.find = function(key) {
 
 HashTable.prototype.set = function(key, value) {
   // implement me...
+  //   ht.set(key, value)
+  // Store the key-value pair in the storage array.
+  // If the key already exists, replace stored value with new value.
+  // Use the hashing function to map the key to an integer and store the value at the corresponding index.
+  // Account for the possibility of collisions.
+  var index = simpleHash(key, this._size);
+  var bucket = this._storage[index];
+  for (var i=0; i<bucket.length; i++ ) {
+    var tuple = bucket[i]; 
+    if (tuple[0] === key) {
+      tuple[1] = value;
+      var keyFound = true;
+      break;
+    }
+  }
+  if (!keyFound) {
+    bucket.push([key, value]);
+    this._count++;
+  }
+  this._storage[index] = bucket;
+  
+  // if (this._count/this._size > 0.75) {
+  //   this.resize(this._size * 2);
+  // }
+  
+  
 };
 // Time complexity:
 
 HashTable.prototype.get = function(key) {
   // implement me...
+  //   myMap.get(key)
+  // => value associated with key, or undefined if none
+  var index = simpleHash(key, this._size);
+  var bucket = this._storage[index];
+  for (var i=0; i<bucket.length; i++ ) {
+    var tuple = bucket[i]; 
+    if (tuple[0] === key) {
+      return tuple[1];
+    }
+  }
+  return undefined;
 };
+
+
 // Time complexity:
 
 HashTable.prototype.has = function(key) {
   // implement me...
+  //   myMap.has(key)
+  // => true/false depending on if a value has been associated with the key
+  
 };
 // Time complexity:
 
 HashTable.prototype.delete = function(key) {
   // implement me...
+  //   myMap.delete(key)
+  // => true if a value was associated with the key
+  // => false if a value was never associated with the key
+  // Remove any value associated to the key
+  var index = simpleHash(key, this._size);
+  var bucket = this._storage[index];
+  for (var i=0; i<bucket.length; i++ ) {
+    var tuple = bucket[i]; 
+    if (tuple[0] === key) {
+      bucket.splice(i,1);
+      this._storage[index] = bucket;
+      this._count--;
+      return true;
+    }
+  }
+  return false;
 };
 // Time complexity:
 
 HashTable.prototype.count = function() {
   // implement me...
+  //   myMap.count()
+  // => integer number of key/value pairs in hash table
+  var totalNumber = 0;
+  for(var j=0; j<this._size; j++) {
+    if(this._storage[i]) {
+      totalNumber += this._storage[i].length;
+    }
+  }
+  return totalNumber;
+  
 };
 // Time complexity:
 
 HashTable.prototype.forEach = function(callback) {
   // implement me...
+  //   myMap.forEach(callbackFn)
+  // => no returned value
+  // Invokes callback function once for each key-value pair in the hash table
+  for (var i=0; i<this._size; i++) {
+    var bucket = this._storage[i];
+    if(bucket){
+      for (var j=0; j<bucket.length; j++) {
+        var tuple = bucket[i];
+        callback(tuple[0], tuple[1]);
+      }
+    }
+  }
 };
 // Time complexity:
-
 
 
 /*

@@ -237,7 +237,7 @@ BinarySearchTree.prototype.traverseDepthFirst_postOrder = function(fn) {
 
 
 BinarySearchTree.prototype.checkIfFull = function() {
-  // implement me...
+  // implement me...https://prod.liveshare.vsengsaas.visualstudio.com/join?6D5FD4F9DAD1F30A27CCA6FC8B27FFE522C0
 /*   
         10                                         
         /\
@@ -246,7 +246,7 @@ BinarySearchTree.prototype.checkIfFull = function() {
      /\    /\
     /  \  /  \
    3   7 12  20
-
+          
 */
   // 1 :  left  exists and right !exists
   //      return false
@@ -275,6 +275,32 @@ BinarySearchTree.prototype.checkIfFull = function() {
 // Time complexity:
 
 BinarySearchTree.prototype.checkIfBalanced = function() {
- 
+  /*
+      10                                         
+      /\
+     /  \
+    5   15                                            
+   /\    
+  /  \               
+ 3   7  
+     /\
+    /  \
+   6    8   
+
+For this exercise, let's say that a tree is balanced if the minimum height and the maximum height differ by no more than 1. 
+The height for a branch is the number of levels below the root.
+
+  1 : calculate min height
+  2 : calculate max height
+  3 : check (max - min) <= 1
+
+  getHeight :
+    if node is null 
+      return 0
+    else 
+      max = getHeight()
+
+
+ */
 };
 // Time complexity:
