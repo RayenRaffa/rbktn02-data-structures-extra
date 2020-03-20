@@ -73,7 +73,7 @@ function simpleHash(str, tableSize) {
 function HashTable(tableSize) {
   // implement me...
   this._storage = [];
-  this._size = tableSize;
+  this._size = tableSize || 10;
   this._count = 0;
 }
 
@@ -97,7 +97,7 @@ HashTable.prototype.set = function(key, value) {
   // Use the hashing function to map the key to an integer and store the value at the corresponding index.
   // Account for the possibility of collisions.
   var index = simpleHash(key, this._size);
-  var bucket = this._storage[index];
+  var bucket = this._storage[index] || [];
   for (var i=0; i<bucket.length; i++ ) {
     var tuple = bucket[i]; 
     if (tuple[0] === key) {
@@ -112,9 +112,9 @@ HashTable.prototype.set = function(key, value) {
   }
   this._storage[index] = bucket;
   
-  // if (this._count/this._size > 0.75) {
-  //   this.resize(this._size * 2);
-  // }
+  if (this._count/this._size > 0.75) {
+    this.resize(this._size * 2);
+  }
   
   
 };
@@ -125,7 +125,7 @@ HashTable.prototype.get = function(key) {
   //   myMap.get(key)
   // => value associated with key, or undefined if none
   var index = simpleHash(key, this._size);
-  var bucket = this._storage[index];
+  var bucket = this._storage[index] || [];
   for (var i=0; i<bucket.length; i++ ) {
     var tuple = bucket[i]; 
     if (tuple[0] === key) {
@@ -160,9 +160,13 @@ HashTable.prototype.delete = function(key) {
       bucket.splice(i,1);
       this._storage[index] = bucket;
       this._count--;
+      if (this._count/this._size < 0.25) {
+        this.resize(this._size / 2);
+      }
       return true;
     }
   }
+  
   return false;
 };
 // Time complexity:
@@ -172,9 +176,10 @@ HashTable.prototype.count = function() {
   //   myMap.count()
   // => integer number of key/value pairs in hash table
   var totalNumber = 0;
-  for(var j=0; j<this._size; j++) {
+  for(var i=0; i<this._size; i++) {
     if(this._storage[i]) {
-      totalNumber += this._storage[i].length;
+      bucket = this._storage[i] || [];
+      totalNumber += bucket.length;
     }
   }
   return totalNumber;
@@ -188,17 +193,30 @@ HashTable.prototype.forEach = function(callback) {
   // => no returned value
   // Invokes callback function once for each key-value pair in the hash table
   for (var i=0; i<this._size; i++) {
-    var bucket = this._storage[i];
-    if(bucket){
-      for (var j=0; j<bucket.length; j++) {
-        var tuple = bucket[i];
-        callback(tuple[0], tuple[1]);
-      }
+    var bucket = this._storage[i] || [];
+    for (var j=0; j<bucket.length; j++) {
+      var tuple = bucket[j];
+      callback(tuple[0], tuple[1]);
     }
+    
   }
 };
 // Time complexity:
 
+
+HashTable.prototype.resize = function(newSize){
+  var newHashTable = new HashTable(newSize);
+  for (var i=0; i<this._size ; i++) {
+    var bucket = this._storage[i] || [];
+    for (var j=0; j<bucket.length; j++) {
+      var tuple = bucket[j];
+      newHashTable.set(tuple[0], tuple[1]);
+    }
+  }
+  this._storage = newHashTable._storage;
+  this._size = newHashTable._size;
+  this._count = newHashTable._count;
+};
 
 /*
 *** Exercises:
